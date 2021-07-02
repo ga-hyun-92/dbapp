@@ -54,3 +54,18 @@ spring:
     show-sql: true
 ```
 
+###sql 쿼리문 -더미데이터
+```sql
+INSERT INTO user(username,PASSWORD) VALUES('ssar','1234');
+INSERT INTO user(username,PASSWORD) VALUES('cos','1234');
+
+SELECT *FROM user;
+
+INSERT INTO post(title,content,user_id) VALUES('제목1','내용1',1);
+INSERT INTO post(title,content,user_id) VALUES('제목2','내용2',1);
+INSERT INTO post(title,content,user_id) VALUES('제목3','내용3',1);
+INSERT INTO post(title,content,user_id) VALUES('제목4','내용4',2);
+INSERT INTO post(title,content,user_id) VALUES('제목5','내용5',2);
+
+SELECT *FROM post;
+```
