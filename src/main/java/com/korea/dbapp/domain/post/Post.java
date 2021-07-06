@@ -1,6 +1,7 @@
 package com.korea.dbapp.domain.post;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -19,19 +20,28 @@ public class Post {
 	@Lob											//jpa문법! long text type으로!
 	private String content;
 	
+	
+	
+	@Override
+	public String toString() {
+		return "Post [id=" + id + ", title=" + title + ", content=" + content + "]";
+	}
 	@JoinColumn(name = "user_id")
-	@ManyToOne							//Many는?? Post, One은?? User => FK키로 인식!
+	@ManyToOne(fetch = FetchType.EAGER)	 //Many는?? Post, One은?? User => FK키로 인식!
 	private User user;					//ORM 사용
 	
 	public User getUser() {
 		return user;
 	}
+	
 	public void setUser(User user) {
 		this.user = user;
 	}
+	
 	public int getId() {
 		return id;
 	}
+	
 	public void setId(int id) {
 		this.id = id;
 	}

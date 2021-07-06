@@ -12,3 +12,4 @@ spring:  mvc:    view:      prefix: /WEB-INF/views/
     
   jpa:    hibernate:      ddl-auto: none #create,update,none(서비스 배포할때 none사용)
     show-sql: true
+    open-in-view: true

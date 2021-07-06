@@ -43,12 +43,21 @@ public class UserApiControllerTest {
 	// http://localhost:8000/user/2 이렇게 주소 입력하면,
 	// parsing방법은?? request.getURI로 ,,, -> test해보자
 	@GetMapping("/test/user/{id}")  //주소에 /user/1 이라고 하면? id=1이 넣어짐
-	public User findById(@PathVariable int id) {
+	public String findById(@PathVariable int id) {
 		// findById =>return타입이 Optional 이다~!
 		//  Optional : 박스를  들고가서  붕어싸만코 달라고하고 있으면  그안에 넣고 없으면 빈 박스만 들고 옴
 		// .get()은?? 무조건 있어!!라는 의미
-		return userRepository.findById(id).get(); 
+		User userEntity=userRepository.findById(id).get();
+//		System.out.println("1");
+//		userEntity.getPosts().get(0).getTitle();
+//		System.out.println("2");
+		
+		//toString이 호출된다!!!!! 이때 open in view가 false이면? toString에서  Lazy loading해서 가져와야해서 에러뜸
+		//그런데, open in view : true이면? 그래서 에러뜸!!! 왜 서로 무한참조하니까!
+		System.out.println(userEntity); 	
+		return "ok"; 
 	}
+	
 	
 	//username이 "ssar" 인 데이터 찾아보자!
 	//보통 회원가입할 때, username은 중복되지 않게함. 
@@ -110,6 +119,14 @@ public class UserApiControllerTest {
 		userRepository.save(userEntity);
 	
 		return "update ok";
+	}
+	
+	//https://www.juso.go.kr/addrlink/addrLinkUrl.do?confmKey=devU01TX0FVVEgyMDIxMDcwNTE3MjgyMzExMTM2MTE=&returnUrl=http://localhost:8000/juso	
+	//다른 사람 서버에 요청해서 응답이 redirect이 localhost:8000/juso로!!
+	
+	//@PostMapping("/juso")
+	public String juso(String roadFullAddr) {
+		return roadFullAddr;
 	}
 	
 }
