@@ -5,6 +5,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -61,6 +62,7 @@ public class UserController {
 		} else {
 			//key 값: principal 인증주체 =>setAttribute(키, Object);
 			//session으로 로그인한 사용자인지 확인하려고!
+			//userEntity.setPassword(null);
 			session.setAttribute("principal", userEntity);
 			
 			return Script.href("/");
@@ -77,30 +79,36 @@ public class UserController {
 	//업데이트 페이지
 	@GetMapping("/user/updateForm")
 	public String updateForm() {
-		return "updateForm";
+		//1.인증과 권한을 검사해야함
+		//2.세션값 사용하면 됨! 그러면 
+	
+		return "user/updateForm";
 	}
 	
-	//업데이트 함수
-	@PutMapping("/user/update")
-	public String update(User user) {
+	//업데이트 함수								//update할때, where절에 걸리므로 {id}!!
+	@PostMapping("/user/{id}")	//원래는  Put으로 해야한다. 나중에 자바스크립트로 Put 요청하기! 
+	public String update(@PathVariable int id, String password,String address) {//password와 address는 x-www-form으로 body데이터로 들어온다.
 		//  1. 세션 아이디값으로 SELECT  하기
+		//공통관심사
 		User principal=(User)session.getAttribute("principal");
-		User userEntity=userRepository.findById(principal.getId()).get();
+		if(principal!=null && id==principal.getId()) {
+			User userEntity=userRepository.findById(id).get();	// 해당 아이디에 대한 모든 정보가 들어있음
+			
+			// 2. 전달받은 값으로 변경하고
+			userEntity.setPassword(password);
+			userEntity.setAddress(address);
+			
+			// 3. SAVE
+			userRepository.save(userEntity);						//새로 저장된 데이터로 다시 저장! update
 		
-		// 2. 전달받은 값으로 변경하고
-		userEntity.setUsername(user.getUsername());
-		userEntity.setPassword(user.getPassword());
-		userEntity.setAddress(user.getAddress());
-		userEntity.setEmail(user.getEmail());
+			// 4. 세션변경
+			session.setAttribute("principal", userEntity);	//update하고  session값을 바꿔야한다.
+			
+			// 5.정보변경 완료 후 메인 페이지 이동
+			return "redirect:/";
+		}
+		return "redirect:/auth/loginForm";
 		
-		// 3. SAVE
-		userRepository.save(userEntity);						//새로 저장된 데이터로 다시 저장! update
-		
-		// 4. 세션변경
-		session.setAttribute("principal", userEntity);	//update하고  session값을 바꿔야한다.
-		
-		// 5.정보변경 완료 후 메인 페이지 이동
-		return "redirect:/";
 	}
 	
 	@GetMapping("/juso")
