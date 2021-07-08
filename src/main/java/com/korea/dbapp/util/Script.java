@@ -1,7 +1,7 @@
 package com.korea.dbapp.util;
 
 public class Script {
-
+	
 	public static String  back(String msg) {
 		StringBuilder sb=new StringBuilder();
 		sb.append("<script>");
@@ -22,4 +22,17 @@ public class Script {
 		
 		return sb.toString();
 	}
+	
+	//위 함수 오버로딩
+	public static String href(String uri,String msg) {
+		StringBuilder sb=new StringBuilder();
+		sb.append("<script>");
+		sb.append("alert('"+msg+"');");
+		sb.append("location.href='"+uri+"';");						
+		sb.append("</script>");
+		
+		return sb.toString();
+	}
+	
+	
 }
