@@ -6,7 +6,7 @@
 	<%-- <c:if test="${!empty sessionScope.principal}"> --%>
 	<!-- 권한 부여!! 해당 글을 작성한 user의 id와 세션(인증주체)에 있는 user의 id랑 같으면! -->
 	<c:if test="${sessionScope.principal.id==postEntity.user.id}">
-		<a href="#" class="btn btn-warning">수정</a>
+		<a href="/post/${postEntity.id}/updateForm" class="btn btn-warning">수정</a>
 		<form action="/post/${postEntity.id}" method="post" style="display: inline-block">
 			<button id="btn-delete" class="btn btn-danger" type="submit">삭제</button>
 		</form>

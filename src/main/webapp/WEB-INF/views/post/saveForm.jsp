@@ -8,11 +8,18 @@
 			<input type="text" class="form-control" placeholder="Enter title" name="title" required="required"/>
 		</div>
 		<div class="form-group">
-		<textarea rows="10" class="form-control" name="content"></textarea>
+		<textarea id="summernote" rows="10" class="form-control" name="content"></textarea>
 		</div>
 		
 		<button type="submit" class="btn btn-primary">글쓰기 완료</button>
 	</form>
 </div>
 
+<script>
+      $('#summernote').summernote({
+        placeholder: 'Hello Bootstrap 4',
+        tabsize: 2,
+        height: 400
+      });
+    </script>
 <%@include file="../layout/footer.jsp"%>
