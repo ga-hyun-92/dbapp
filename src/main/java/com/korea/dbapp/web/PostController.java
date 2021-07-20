@@ -1,19 +1,29 @@
 package com.korea.dbapp.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.korea.dbapp.domain.comment.Comment;
+import com.korea.dbapp.domain.comment.CommentRepository;
 import com.korea.dbapp.domain.post.Post;
 import com.korea.dbapp.domain.post.PostRepository;
 import com.korea.dbapp.domain.user.User;
 import com.korea.dbapp.util.Script;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor 	//final붙어있는 애들을 전부 생성자 만들어준다!!
 @Controller
 public class PostController {
 //	@GetMapping("/")
@@ -23,13 +33,11 @@ public class PostController {
 	
 	private final PostRepository postRepository;
 	private final HttpSession session;
+	private final CommentRepository commentRepository;
 
 	//DI이다!!!!!!!!! Dependency Injection
 	//IoC에 DI하면? 어떤 장점이 있어요>???
-	public PostController(PostRepository postRepository, HttpSession session) {
-		this.postRepository = postRepository;
-		this.session = session;
-	}
+
 
 	@GetMapping({"/","/post"})
 	public String list(Model model) {	//model=request
@@ -38,16 +46,21 @@ public class PostController {
 		return "post/list";	//ViewResolver도움!!!+RequestDispatcher(request유지기법)
 	}
 	
+	
 	//상세보기
 	@GetMapping("/post/{id}")
 	public String detail(@PathVariable int id, Model model) {
-		Post postEntity=postRepository.findById(id).get();
-		model.addAttribute("postEntity",postEntity);
+			Post postEntity=postRepository.findById(id).get();
+			model.addAttribute("postEntity",postEntity);
+					
+		List<Comment> commentsEntity=commentRepository.mFindAllByPostId(id);
+		model.addAttribute("commentsEntity",commentsEntity);
 		return "post/detail";
 	}
 	
+	
 	//게시글 삭제하기
-	@PostMapping("/post/{id}")	//id는?? postEntity의 id이다!!!!! 
+	@DeleteMapping("/post/{id}")	//id는?? postEntity의 id이다!!!!! 
 	public @ResponseBody String deleteById(@PathVariable int id) {	//@ResponseBody사용하면??? MessageConverter를 타고간다
 		//1.권한체크(post id를 통해 user id를 찾아서 id와 session의 id를 비교한다)
 		//예를 들어, 2번게시글을 쓴 user의 id를 찾아야한다. 
@@ -71,14 +84,12 @@ public class PostController {
 			//redirect안하면??? 기존에 만들어놓은게 삭제된다!!! 
 			//예를들어, post/list로 가라고 해놓으면? postsEntity값이 없어서 글목록 못뿌림
 			//return "redirect:/";	
-			return Script.href("/","삭제 완료");		//이 요청을 브라우저가 받아서 해석한다! alert띄우고 href 페이지 이동
+			return "ok";		//이 요청을 브라우저가 받아서 해석한다! alert띄우고 href 페이지 이동
 		} else {
 			
-			return Script.back("삭제실패");
+			return "fail";
 		}
-		
 		//return "redirect:/auth/loginForm";
-		
 	}//end of deleteById
 	
 	@GetMapping("/post/saveForm")
@@ -122,8 +133,8 @@ public class PostController {
 	}
 	
 	//게시글 업데이트 함수
-	@PostMapping("/post/{id}/update")
-	public String update(@PathVariable int id,String title,String content) {
+	@PutMapping("/post/{id}")
+	public @ResponseBody String update(@PathVariable int id,@RequestBody Post post) {
 		//0.인증 및 권한!
 		User principal=(User)session.getAttribute("principal");
 		int loginId=principal.getId();
@@ -134,16 +145,14 @@ public class PostController {
 		
 		if(loginId==postOwnerId) {
 			//2.수정된 데이터 받아온 걸로 다시 저장하기!
-			postEntity.setTitle(title);
-			postEntity.setContent(content);
+			postEntity.setTitle(post.getTitle());
+			postEntity.setContent(post.getContent());
 			
 			//3.수정된 게시글post을 다시 DB에 저장하기
 			postRepository.save(postEntity);
-//			return Script.href("redirect:/post/"+"id","수정완료");
-			return "redirect:/post/"+id;
+			return "ok";
 		}	else {
-//			return Script.back("수정실패");
-			return "redirect:auth/login";
+			return "redirect:/auth/login";
 		}
 		
 	}

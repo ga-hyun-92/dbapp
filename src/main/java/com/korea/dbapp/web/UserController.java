@@ -8,25 +8,22 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.korea.dbapp.domain.post.PostRepository;
 import com.korea.dbapp.domain.user.User;
 import com.korea.dbapp.domain.user.UserRepository;
 import com.korea.dbapp.util.Script;
 
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor 	//final붙어있는 애들을 전부 생성자 만들어준다!! ->의존성 주입(DI)
 @Controller
 public class UserController {
 
 	private final UserRepository userRepository;
 	private final HttpSession session;
-	
-	//의존성 주입(DI)
-	public UserController(UserRepository userRepository, HttpSession session) {
-		this.userRepository = userRepository;
-		this.session = session;
-	}
-	
-	
 	
 	//회원가입 페이지로 가는 함수!
 	//데이터 돌려주는게 아니라, 파일 응답해주는 !
@@ -50,14 +47,15 @@ public class UserController {
 		return "redirect:/auth/loginForm"; //위에 만들어놓은 함수로 선언된 로그인페이지로 redirect
 	}
 	
+	
 	//로그인 실패했을 때, alert뜨게 해보자!!! 그래서 데이터 리턴 코드로 하기 위해
 	//RestController 사용한다.
 	@PostMapping("/auth/login")
-	public @ResponseBody String login(User user) {	//@ResponseBody 넣으면? RestController 로 된다!
+	public @ResponseBody String login(@RequestBody User user) {	//@ResponseBody 넣으면? RestController 로 된다!
 		User userEntity=userRepository.mLogin(user.getUsername(),user.getPassword());
 		
 		if(userEntity==null) {
-			return Script.back("로그인 fail");
+			return "fail";
 			
 		} else {
 			//key 값: principal 인증주체 =>setAttribute(키, Object);
@@ -65,7 +63,7 @@ public class UserController {
 			//userEntity.setPassword(null);
 			session.setAttribute("principal", userEntity);
 			
-			return Script.href("/");
+			return "ok";
 		}
 	}
 	
