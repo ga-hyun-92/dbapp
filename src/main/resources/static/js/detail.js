@@ -40,8 +40,9 @@ let saveComment =  async (postId) =>  {
 			
 			replyItem.innerHTML = temp;
 			replyBoxEL.prepend(replyItem);
+
 			let replyText=document.querySelector("#reply-text");
-			replyText.innerText="";
+			replyText.value="";
 		}
 	}
 
