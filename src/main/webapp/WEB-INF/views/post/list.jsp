@@ -5,7 +5,7 @@
 <div class="container">
 	<!-- var이 들어가는건 pageScope(해당 페이지에만 쓸 수 있는 것!)에 들어간다 -->
 	<!-- for문이 돌때마다 post라는 변수에 들어간다. 즉, 메모리 영역 중에 pageScope에 들어감 -->
-	<c:forEach var="post" items="${postsEntity}"> <!--postsEntity를 request.getAttribute로 해당 값을찾음!! -->
+	<c:forEach var="post" items="${postsEntity.content}"> <!--postsEntity를 request.getAttribute로 해당 값을찾음!! -->
 		<div class="card">
 			<div class="card-body">
 				<h4 class="card-title">${post.title}</h4> <!-- 원래는 이렇게 표현해야함${pageScope.post.title} -->
@@ -14,5 +14,20 @@
 		</div><!-- End Of Card -->
 		<br/>
 	</c:forEach>
+
+	<ul class="pagination">
+	<c:choose>
+		<c:when test="${postsEntity.first==true}">
+ 		 <li class="page-item disabled "><a class="page-link" href="?page=${postsEntity.number-1}">Previous</a></li>
+		  <li class="page-item"><a class="page-link" href="?page=${postsEntity.number+1}">Next</a></li>
+		</c:when>
+		<c:otherwise>
+		<li class="page-item"><a class="page-link" href="?page=${postsEntity.number-1}">Previous</a></li>
+ 	 	<li class="page-item disabled"><a class="page-link" href="?page=${postsEntity.number+1}">Next</a></li>
+		</c:otherwise>
+	</c:choose>
+	<li class="page-item"><a class="page-link" href="?page=0">1</a></li>
+	</ul>
 </div><!-- End Of Container -->
+
 <%@include file="../layout/footer.jsp"%>
